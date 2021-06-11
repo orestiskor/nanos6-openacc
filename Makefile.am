@@ -205,6 +205,10 @@ if USE_CUDA
 symbol_resolution += loader/symbol-resolver/cuda-device-api.c
 endif
 
+if USE_OPENACC
+symbol_resolution += loader/symbol-resolver/openacc-device-api.c
+endif
+
 if USE_DEVMEMMAN
 symbol_resolution += loader/symbol-resolver/device-mem.c
 endif
@@ -244,6 +248,10 @@ symbol_resolution += \
 
 if USE_CUDA
 symbol_resolution += loader/indirect-symbols/cuda-device-api.c
+endif
+
+if USE_OPENACC
+symbol_resolution += loader/indirect-symbols/openacc-device-api.c
 endif
 
 if USE_DEVMEMMAN
