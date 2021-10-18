@@ -22,6 +22,8 @@ private:
 
 	OpenAccQueuePool _queuePool;
 
+	thread_local static Task* _currentTask;
+
 	// Whether the device service should run while there are running tasks
 	static ConfigVariable<bool> _pinnedPolling;
 
@@ -50,6 +52,9 @@ private:
 
 	inline void preRunTask(Task *task) override
 	{
+		// Set the thread_local static var to be used by nanos6_get_current_acc_queue()
+		_currentTask = task;
+
 		OpenAccQueue *queue = (OpenAccQueue *)task->getDeviceData();
 		assert(queue != nullptr);
 		queue->setTask(task);
@@ -99,6 +104,12 @@ public:
 	{
 		_queuePool.releaseAsyncQueue((OpenAccQueue *)queue);
 	}
+
+	static inline Task *getCurrentTask()
+	{
+		return _currentTask;
+	}
+
 };
 
 #endif // OPENACC_ACCELERATOR_HPP
