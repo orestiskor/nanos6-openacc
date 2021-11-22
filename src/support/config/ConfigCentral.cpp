@@ -42,6 +42,9 @@ ConfigCentral::ConfigCentral() :
 	// DLB
 	registerOption<bool_t>("dlb.enabled", false);
 
+	// Energy manager
+	registerOption<string_t>("energy.filename", "energy_data.json");
+
 	// Hardware counters
 	registerOption<bool_t>("hardware_counters.verbose", false);
 	registerOption<string_t>("hardware_counters.verbose_file", "nanos6-output-hwcounters.txt");
