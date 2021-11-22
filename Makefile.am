@@ -385,6 +385,7 @@ common_sources = \
 	src/executors/threads/cpu-managers/default/DefaultCPUManager.cpp \
 	src/executors/threads/cpu-managers/default/policies/HybridPolicy.cpp \
 	src/executors/threads/cpu-managers/default/policies/IdlePolicy.cpp \
+	src/hardware/EnergyManager.cpp \
 	src/hardware/HardwareInfo.cpp \
 	src/hardware/device/Accelerator.cpp \
 	src/hardware/hwinfo/HostInfo.cpp \
@@ -754,6 +755,7 @@ noinst_HEADERS = \
 	src/executors/threads/cpu-managers/dlb/policies/LeWIPolicy.hpp \
 	src/executors/threads/kernel-level/CPUThreadingModelData.hpp \
 	src/executors/threads/kernel-level/WorkerThreadBase.hpp \
+	src/hardware/EnergyManager.hpp \
 	src/hardware/HardwareInfo.hpp \
 	src/hardware/device/Accelerator.hpp \
 	src/hardware/device/DeviceEnvironment.hpp \
