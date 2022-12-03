@@ -27,10 +27,16 @@ private:
 
 	static const size_t totalDevices;
 
+	static bool _regions_deps; // true for regions, false for discrete
+
+	// Get _directory entry data of a given pointer-symbol, if it exists in the directory
+	// returns: bool, with 'contains' semantics; the idea is to be used both as 'contains' and entry getter.
+	// param res: the result Entry. It makes sense to check the res entry if the return value is true
+	// 			(will be a {0,0} entry otherwise)
+	static bool getEntry(void *ptr, DeviceMemEntry *res);
+
 public:
-	static void initialize()
-	{
-	}
+	static void initialize();
 
 	static void shutdown()
 	{
@@ -41,19 +47,6 @@ public:
 
 	// Free symbol from Unified Memory and delete its entry from _directory
 	static void free(void *ptr);
-
-	// Check if the symbol referenced is contained in _directory
-	static bool contains(void *ptr);
-
-	// Get _directory entry data of a given pointer-symbol
-	static DeviceMemEntry getEntry(void *ptr);
-
-	// For a given pointer-symbol, return the device number it has been allocated on
-	// (this is a wrapper to avoid redundant handling of the getEntry result)
-	static inline int getDataLocation(void *ptr)
-	{
-		return getEntry(ptr).deviceNum;
-	}
 
 	// Given a -device- task, compute the device-affinity (device_num to execute on) based on dependencies
 	static size_t computeDeviceAffinity(Task *task);
