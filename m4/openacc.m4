@@ -36,6 +36,9 @@ AC_DEFUN([AC_PGI_VERSION_SELECT],
 			23.9|23.11)
 				ac_manual_pgi_acc_libs="-lacchost -laccdevice -laccdevaux -lnvhpcman -lnvc -lnvomp"
 				;;
+			24.*)
+				ac_manual_pgi_acc_libs="-lacchost -laccdevice -laccdevaux -lnvhpcman -lnvc -lnvomp"
+				;;
 			*)
 				AC_MSG_WARN([The detected PGI version is not supported. Nanos6 is tested with PGI 19.10 and PGI/NVIDIA HPC-SDK 20.7 - 20.9])
 				ac_openacc_pgi_unsupported=yes
