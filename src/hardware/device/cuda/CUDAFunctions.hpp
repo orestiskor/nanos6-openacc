@@ -46,6 +46,45 @@ public:
 		return initializedStatus;
 	}
 
+	static inline cudaError_t compatMemAdvise(void *devPtr, size_t count, cudaMemoryAdvise advice, int device)
+	{
+#if defined(CUDART_VERSION) && CUDART_VERSION >= 13000
+		// CUDA 13.0 and later has a new API for memAdvise, replacing the int device with a cudaMemLocation
+		cudaMemLocation location;
+		if (device == cudaCpuDeviceId) { // unlikely in our case, but for completeness, we handle it
+			location.type = cudaMemLocationTypeHost;
+			location.id = 0;
+		} else {
+			location.type = cudaMemLocationTypeDevice;
+			location.id = device;
+		}
+
+		return cudaMemAdvise(devPtr, count, advice, location);
+#else
+		return cudaMemAdvise(devPtr, count, advice, device);
+#endif
+	}
+
+	static inline cudaError_t compatMemPrefetchAsync(void *devPtr, size_t count, int device, cudaStream_t stream)
+	{
+#if defined(CUDART_VERSION) && CUDART_VERSION >= 13000
+		// CUDA 13.0 and later has a new API for memPrefetch, replacing the int device with a cudaMemLocation
+		// and an extra flags argument (which is unused)
+		cudaMemLocation location;
+		if (device == cudaCpuDeviceId) { // unlikely in our case, but for completeness, we handle it
+			location.type = cudaMemLocationTypeHost;
+			location.id = 0;
+		} else {
+			location.type = cudaMemLocationTypeDevice;
+			location.id = device;
+		}
+
+		return cudaMemPrefetchAsync(devPtr, count, location, 0 /*flags - unused*/ ,stream);
+#else
+		return cudaMemPrefetchAsync(devPtr, count, device, stream);
+#endif
+	}
+
 	static CUfunction loadFunction(const char *str)
 	{
 		return getCudaRuntimeLoader().loadFunction(str);
@@ -167,7 +206,7 @@ public:
 
 		// Depending on the access we're prefetching, we will advise the driver to do a shared copy
 		cudaMemoryAdvise advice = (readOnly ? cudaMemAdviseSetReadMostly : cudaMemAdviseUnsetReadMostly);
-		cudaError_t err = cudaMemAdvise(pHost, size, advice, device);
+		cudaError_t err = compatMemAdvise(pHost, size, advice, device);
 
 		// The memory may not be managed memory, and thus, skip prefetching
 		if (err == cudaErrorInvalidValue)
@@ -177,7 +216,7 @@ public:
 		CUDAErrorHandler::handle(err, "Advising memory region");
 
 		// Call a prefetch operation on the same stream that we are going to launch that task on
-		err = cudaMemPrefetchAsync(pHost, size, device, stream);
+		err = compatMemPrefetchAsync(pHost, size, device, stream);
 		CUDAErrorHandler::handle(err, "Prefetching memory to device");
 	}
 
